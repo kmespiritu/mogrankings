@@ -65,3 +65,38 @@ export interface EloRating {
 
 export type SortField = 'rank' | 'name' | 'chadScore' | 'followers' | 'growth' | 'audienceScore';
 export type SortDirection = 'asc' | 'desc';
+
+// ─── Submissions ─────────────────────────────────────────────────
+
+export type SubmissionStatus = 'pending' | 'approved' | 'rejected';
+
+export interface SubmissionPlatform {
+  platform: Platform;
+  username: string;
+}
+
+export interface Submission {
+  id: string;
+  name: string;
+  handle: string;
+  bio: string | null;
+  country: string | null;
+  archetypes: ArchetypeKey[];
+  platforms: SubmissionPlatform[];
+  reason: string | null;
+  status: SubmissionStatus;
+  admin_notes: string | null;
+  submitter_ip: string | null;
+  created_at: string;
+  reviewed_at: string | null;
+}
+
+export interface SubmissionFormData {
+  name: string;
+  handle: string;
+  bio: string;
+  country: string;
+  archetypes: ArchetypeKey[];
+  platforms: SubmissionPlatform[];
+  reason: string;
+}

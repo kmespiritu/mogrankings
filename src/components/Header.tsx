@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { href: '/', label: 'Leaderboard' },
   { href: '/archetypes', label: 'Archetypes' },
   { href: '/compare', label: 'Who Mogs Who' },
+  { href: '/submit', label: 'Submit' },
 ];
 
 export default function Header() {
