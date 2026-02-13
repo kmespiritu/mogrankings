@@ -38,7 +38,6 @@ export default function SubmitPage() {
   const [fieldErrors, setFieldErrors] = useState<string[]>([]);
   const [serverError, setServerError] = useState('');
 
-  // ── Archetype toggle ──
   function toggleArchetype(key: ArchetypeKey) {
     setArchetypes((prev) =>
       prev.includes(key)
@@ -49,10 +48,8 @@ export default function SubmitPage() {
     );
   }
 
-  // ── Platform row management ──
   function addPlatformRow() {
     if (platformRows.length >= 5) return;
-    // Pick the first platform not yet used
     const usedPlatforms = new Set(platformRows.map((r) => r.platform));
     const nextPlatform = PLATFORM_OPTIONS.find((p) => !usedPlatforms.has(p.value));
     setPlatformRows([
@@ -76,13 +73,11 @@ export default function SubmitPage() {
     setPlatformRows(updated);
   }
 
-  // ── Submit ──
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setFieldErrors([]);
     setServerError('');
 
-    // Build submission data
     const data = {
       name,
       handle,
@@ -96,7 +91,6 @@ export default function SubmitPage() {
       reason,
     };
 
-    // Client-side validation
     const validation = validateSubmission(data);
     if (!validation.valid) {
       setFieldErrors(validation.errors);
@@ -134,18 +128,18 @@ export default function SubmitPage() {
   // ── Success state ──
   if (formState === 'success') {
     return (
-      <div className="ambient-glow flex flex-col items-center gap-6 py-20">
-        <div className="rounded-xl border border-[#10B981]/30 bg-[#10B981]/5 px-8 py-10 text-center">
-          <div className="text-4xl">✅</div>
-          <h2 className="mt-4 font-heading text-2xl font-black text-[#10B981]">
+      <div className="ambient-glow flex flex-col items-center gap-6 py-12 sm:py-20">
+        <div className="rounded-xl border border-[#10B981]/30 bg-[#10B981]/5 px-5 py-8 text-center sm:px-8 sm:py-10">
+          <div className="text-4xl">&#x2705;</div>
+          <h2 className="mt-4 font-heading text-xl font-black text-[#10B981] sm:text-2xl">
             NOMINATION RECEIVED
           </h2>
-          <p className="mt-2 font-mono text-sm text-[#64748B]">
+          <p className="mt-2 font-mono text-xs text-[#64748B] sm:text-sm">
             We&apos;ll review it shortly. We&apos;re all gonna make it.
           </p>
           <Link
             href="/"
-            className="mt-6 inline-block rounded-lg border border-[#1E293B] bg-[#0F172A] px-6 py-2 font-mono text-sm text-[#F8FAFC] transition-colors hover:border-[#F59E0B] hover:text-[#F59E0B]"
+            className="mt-6 inline-block rounded-lg border border-[#1E293B] bg-[#0F172A] px-5 py-2 font-mono text-sm text-[#F8FAFC] transition-colors hover:border-[#F59E0B] hover:text-[#F59E0B]"
           >
             Back to Leaderboard
           </Link>
@@ -155,13 +149,13 @@ export default function SubmitPage() {
   }
 
   return (
-    <div className="ambient-glow flex flex-col gap-8">
+    <div className="ambient-glow flex flex-col gap-5 sm:gap-8">
       {/* Hero */}
       <div className="relative z-10 text-center">
-        <h1 className="font-heading text-4xl font-black tracking-tight text-[#F8FAFC]">
+        <h1 className="font-heading text-2xl font-black tracking-tight text-[#F8FAFC] sm:text-4xl">
           NOMINATE A <span className="text-[#F59E0B]">CHAD</span>
         </h1>
-        <p className="mt-2 font-mono text-sm text-[#64748B]">
+        <p className="mt-1.5 font-mono text-xs text-[#64748B] sm:mt-2 sm:text-sm">
           Know someone who deserves to be on the leaderboard? Submit them for review.
         </p>
       </div>
@@ -169,19 +163,19 @@ export default function SubmitPage() {
       {/* Form */}
       <form
         onSubmit={handleSubmit}
-        className="mx-auto w-full max-w-2xl rounded-xl border border-[#1E293B] bg-[#0F172A] p-6"
+        className="mx-auto w-full max-w-2xl rounded-xl border border-[#1E293B] bg-[#0F172A] p-4 sm:p-6"
       >
         {/* Server error banner */}
         {serverError && (
-          <div className="mb-6 rounded-lg border border-red-500/30 bg-red-500/5 px-4 py-3 font-mono text-sm text-red-400">
+          <div className="mb-4 rounded-lg border border-red-500/30 bg-red-500/5 px-3 py-2.5 font-mono text-xs text-red-400 sm:mb-6 sm:px-4 sm:py-3 sm:text-sm">
             {serverError}
           </div>
         )}
 
         {/* Field errors */}
         {fieldErrors.length > 0 && (
-          <div className="mb-6 rounded-lg border border-red-500/30 bg-red-500/5 px-4 py-3">
-            <ul className="list-inside list-disc space-y-1 font-mono text-xs text-red-400">
+          <div className="mb-4 rounded-lg border border-red-500/30 bg-red-500/5 px-3 py-2.5 sm:mb-6 sm:px-4 sm:py-3">
+            <ul className="list-inside list-disc space-y-1 font-mono text-[11px] text-red-400 sm:text-xs">
               {fieldErrors.map((err, i) => (
                 <li key={i}>{err}</li>
               ))}
@@ -190,7 +184,7 @@ export default function SubmitPage() {
         )}
 
         {/* ── NAME ── */}
-        <fieldset className="mb-6">
+        <fieldset className="mb-4 sm:mb-6">
           <label className="mb-1.5 block font-heading text-xs font-bold uppercase tracking-wider text-[#64748B]">
             Name <span className="text-red-400">*</span>
           </label>
@@ -200,12 +194,12 @@ export default function SubmitPage() {
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. Jordan Barrett"
             maxLength={80}
-            className="w-full rounded-lg border border-[#1E293B] bg-[#020617] px-4 py-2.5 font-mono text-sm text-[#F8FAFC] placeholder-[#334155] outline-none transition-colors focus:border-[#F59E0B]"
+            className="w-full rounded-lg border border-[#1E293B] bg-[#020617] px-3 py-2.5 font-mono text-sm text-[#F8FAFC] placeholder-[#334155] outline-none transition-colors focus:border-[#F59E0B]"
           />
         </fieldset>
 
         {/* ── HANDLE ── */}
-        <fieldset className="mb-6">
+        <fieldset className="mb-4 sm:mb-6">
           <label className="mb-1.5 block font-heading text-xs font-bold uppercase tracking-wider text-[#64748B]">
             Handle <span className="text-red-400">*</span>
           </label>
@@ -215,12 +209,12 @@ export default function SubmitPage() {
             onChange={(e) => setHandle(e.target.value)}
             placeholder="@username"
             maxLength={60}
-            className="w-full rounded-lg border border-[#1E293B] bg-[#020617] px-4 py-2.5 font-mono text-sm text-[#F8FAFC] placeholder-[#334155] outline-none transition-colors focus:border-[#F59E0B]"
+            className="w-full rounded-lg border border-[#1E293B] bg-[#020617] px-3 py-2.5 font-mono text-sm text-[#F8FAFC] placeholder-[#334155] outline-none transition-colors focus:border-[#F59E0B]"
           />
         </fieldset>
 
         {/* ── BIO ── */}
-        <fieldset className="mb-6">
+        <fieldset className="mb-4 sm:mb-6">
           <label className="mb-1.5 block font-heading text-xs font-bold uppercase tracking-wider text-[#64748B]">
             Bio <span className="text-[#334155]">(optional)</span>
           </label>
@@ -230,7 +224,7 @@ export default function SubmitPage() {
             placeholder="Brief description..."
             maxLength={500}
             rows={3}
-            className="w-full resize-none rounded-lg border border-[#1E293B] bg-[#020617] px-4 py-2.5 font-mono text-sm text-[#F8FAFC] placeholder-[#334155] outline-none transition-colors focus:border-[#F59E0B]"
+            className="w-full resize-none rounded-lg border border-[#1E293B] bg-[#020617] px-3 py-2.5 font-mono text-sm text-[#F8FAFC] placeholder-[#334155] outline-none transition-colors focus:border-[#F59E0B]"
           />
           <div className="mt-1 text-right font-mono text-[10px] text-[#334155]">
             {bio.length}/500
@@ -238,14 +232,14 @@ export default function SubmitPage() {
         </fieldset>
 
         {/* ── COUNTRY ── */}
-        <fieldset className="mb-6">
+        <fieldset className="mb-4 sm:mb-6">
           <label className="mb-1.5 block font-heading text-xs font-bold uppercase tracking-wider text-[#64748B]">
             Country <span className="text-red-400">*</span>
           </label>
           <select
             value={country}
             onChange={(e) => setCountry(e.target.value)}
-            className="w-full rounded-lg border border-[#1E293B] bg-[#020617] px-4 py-2.5 font-mono text-sm text-[#F8FAFC] outline-none transition-colors focus:border-[#F59E0B]"
+            className="w-full rounded-lg border border-[#1E293B] bg-[#020617] px-3 py-2.5 font-mono text-sm text-[#F8FAFC] outline-none transition-colors focus:border-[#F59E0B]"
           >
             <option value="">Select country...</option>
             {COUNTRY_OPTIONS.map((flag) => (
@@ -257,14 +251,14 @@ export default function SubmitPage() {
         </fieldset>
 
         {/* ── ARCHETYPES ── */}
-        <fieldset className="mb-6">
+        <fieldset className="mb-4 sm:mb-6">
           <label className="mb-1.5 block font-heading text-xs font-bold uppercase tracking-wider text-[#64748B]">
             Archetypes <span className="text-red-400">*</span>
             <span className="ml-2 text-[10px] font-normal normal-case text-[#334155]">
               select 1-4
             </span>
           </label>
-          <div className="flex flex-wrap gap-2">
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
             {ARCHETYPE_LIST.map((arch) => {
               const isSelected = archetypes.includes(arch.key);
               return (
@@ -272,7 +266,7 @@ export default function SubmitPage() {
                   key={arch.key}
                   type="button"
                   onClick={() => toggleArchetype(arch.key)}
-                  className="flex items-center gap-1.5 rounded-lg border px-3 py-2 font-mono text-xs font-medium transition-all"
+                  className="flex items-center justify-center gap-1 rounded-lg border px-2.5 py-2 font-mono text-[11px] font-medium transition-all sm:gap-1.5 sm:px-3 sm:text-xs"
                   style={{
                     borderColor: isSelected ? arch.color : '#1E293B',
                     backgroundColor: isSelected ? arch.color + '15' : 'transparent',
@@ -288,17 +282,17 @@ export default function SubmitPage() {
         </fieldset>
 
         {/* ── PLATFORMS ── */}
-        <fieldset className="mb-6">
+        <fieldset className="mb-4 sm:mb-6">
           <label className="mb-1.5 block font-heading text-xs font-bold uppercase tracking-wider text-[#64748B]">
             Social Platforms <span className="text-red-400">*</span>
           </label>
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2.5 sm:gap-3">
             {platformRows.map((row, i) => (
-              <div key={i} className="flex items-center gap-2">
+              <div key={i} className="flex items-center gap-1.5 sm:gap-2">
                 <select
                   value={row.platform}
                   onChange={(e) => updatePlatformRow(i, 'platform', e.target.value)}
-                  className="w-36 rounded-lg border border-[#1E293B] bg-[#020617] px-3 py-2.5 font-mono text-xs text-[#F8FAFC] outline-none transition-colors focus:border-[#F59E0B]"
+                  className="w-24 shrink-0 rounded-lg border border-[#1E293B] bg-[#020617] px-2 py-2.5 font-mono text-[11px] text-[#F8FAFC] outline-none transition-colors focus:border-[#F59E0B] sm:w-36 sm:px-3 sm:text-xs"
                 >
                   {PLATFORM_OPTIONS.map((p) => (
                     <option key={p.value} value={p.value}>
@@ -312,7 +306,7 @@ export default function SubmitPage() {
                   onChange={(e) => updatePlatformRow(i, 'username', e.target.value)}
                   placeholder="username"
                   maxLength={60}
-                  className="flex-1 rounded-lg border border-[#1E293B] bg-[#020617] px-4 py-2.5 font-mono text-xs text-[#F8FAFC] placeholder-[#334155] outline-none transition-colors focus:border-[#F59E0B]"
+                  className="min-w-0 flex-1 rounded-lg border border-[#1E293B] bg-[#020617] px-3 py-2.5 font-mono text-[11px] text-[#F8FAFC] placeholder-[#334155] outline-none transition-colors focus:border-[#F59E0B] sm:text-xs"
                 />
                 {platformRows.length > 1 && (
                   <button
@@ -320,7 +314,7 @@ export default function SubmitPage() {
                     onClick={() => removePlatformRow(i)}
                     className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#1E293B] text-[#64748B] transition-colors hover:border-red-500/50 hover:text-red-400"
                   >
-                    ×
+                    &#xD7;
                   </button>
                 )}
               </div>
@@ -338,7 +332,7 @@ export default function SubmitPage() {
         </fieldset>
 
         {/* ── REASON ── */}
-        <fieldset className="mb-8">
+        <fieldset className="mb-6 sm:mb-8">
           <label className="mb-1.5 block font-heading text-xs font-bold uppercase tracking-wider text-[#64748B]">
             Why should they be on the leaderboard?{' '}
             <span className="text-[#334155]">(optional)</span>
@@ -349,7 +343,7 @@ export default function SubmitPage() {
             placeholder="Make your case..."
             maxLength={1000}
             rows={3}
-            className="w-full resize-none rounded-lg border border-[#1E293B] bg-[#020617] px-4 py-2.5 font-mono text-sm text-[#F8FAFC] placeholder-[#334155] outline-none transition-colors focus:border-[#F59E0B]"
+            className="w-full resize-none rounded-lg border border-[#1E293B] bg-[#020617] px-3 py-2.5 font-mono text-sm text-[#F8FAFC] placeholder-[#334155] outline-none transition-colors focus:border-[#F59E0B]"
           />
           <div className="mt-1 text-right font-mono text-[10px] text-[#334155]">
             {reason.length}/1000

@@ -47,7 +47,8 @@ export default function Sparkline({
       width={width}
       height={height}
       viewBox={`0 0 ${width} ${height}`}
-      className="overflow-visible"
+      className="max-w-full overflow-visible"
+      preserveAspectRatio="none"
     >
       <defs>
         <linearGradient id={`grad-${trend}`} x1="0" y1="0" x2="0" y2="1">

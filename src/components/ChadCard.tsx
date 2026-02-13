@@ -26,13 +26,13 @@ export default function ChadCard({ chad, rank, eloRating }: ChadCardProps) {
   return (
     <Link
       href={`/chad/${chad.slug}`}
-      className="group flex flex-col gap-3 rounded-lg border border-[#1E293B] bg-[#0F172A] p-4 transition-all hover:border-[#F59E0B]/30 hover:shadow-[0_0_20px_rgba(245,158,11,0.05)]"
+      className="group flex flex-col gap-2.5 rounded-lg border border-[#1E293B] bg-[#0F172A] p-3 transition-all hover:border-[#F59E0B]/30 hover:shadow-[0_0_20px_rgba(245,158,11,0.05)] sm:gap-3 sm:p-4"
     >
       {/* Top row: rank + photo + name + tier */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-2">
           <span className="font-mono text-xs text-[#64748B]">
-            {chad.isLegacy ? '∞' : `#${rank}`}
+            {chad.isLegacy ? '\u221E' : `#${rank}`}
           </span>
           <Image
             src={chad.image}
@@ -48,10 +48,10 @@ export default function ChadCard({ chad, rank, eloRating }: ChadCardProps) {
 
       {/* Name */}
       <div>
-        <h3 className="font-heading text-lg font-bold text-[#F8FAFC]">
+        <h3 className="font-heading text-base font-bold text-[#F8FAFC] sm:text-lg">
           {chad.name}
         </h3>
-        <span className="font-mono text-xs text-[#64748B]">{chad.handle}</span>
+        <span className="font-mono text-[11px] text-[#64748B] sm:text-xs">{chad.handle}</span>
       </div>
 
       {/* Archetypes */}
@@ -68,7 +68,7 @@ export default function ChadCard({ chad, rank, eloRating }: ChadCardProps) {
             <div className="font-mono text-[10px] uppercase text-[#64748B]">
               Mog Score
             </div>
-            <div className="font-heading text-2xl font-black text-[#F59E0B]">
+            <div className="font-heading text-xl font-black text-[#F59E0B] sm:text-2xl">
               {chad.score.chadScore}
             </div>
           </div>
@@ -91,7 +91,7 @@ export default function ChadCard({ chad, rank, eloRating }: ChadCardProps) {
 
       {/* Followers */}
       <div className="flex items-center justify-between border-t border-[#1E293B] pt-2">
-        <span className="font-mono text-xs text-[#64748B]">
+        <span className="font-mono text-[11px] text-[#64748B] sm:text-xs">
           {formatNum(total)} followers
         </span>
         <TrendBadge trend={chad.score.trend} growth={chad.score.monthlyGrowth} />

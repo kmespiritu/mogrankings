@@ -42,7 +42,7 @@ function MatchupCard({
     <button
       onClick={onVote}
       disabled={disabled}
-      className={`matchup-card group relative flex flex-1 flex-col items-center gap-4 rounded-xl border p-6 transition-all sm:p-8 ${
+      className={`matchup-card group relative flex flex-1 flex-col items-center gap-3 rounded-xl border p-4 transition-all sm:gap-4 sm:p-6 md:p-8 ${
         result
           ? isWinner
             ? 'border-[#22C55E] bg-[#22C55E]/5'
@@ -53,7 +53,7 @@ function MatchupCard({
       {/* ELO change overlay */}
       {eloChange !== null && (
         <div
-          className={`elo-change-anim absolute top-4 ${side === 'left' ? 'right-4' : 'left-4'} font-heading text-2xl font-black ${
+          className={`elo-change-anim absolute top-3 sm:top-4 ${side === 'left' ? 'right-3 sm:right-4' : 'left-3 sm:left-4'} font-heading text-xl font-black sm:text-2xl ${
             eloChange >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'
           }`}
         >
@@ -68,7 +68,7 @@ function MatchupCard({
         alt={chad.name}
         width={96}
         height={96}
-        className={`rounded-full border-2 transition-all ${
+        className={`h-16 w-16 rounded-full border-2 transition-all sm:h-24 sm:w-24 ${
           result
             ? isWinner
               ? 'border-[#22C55E]'
@@ -78,16 +78,16 @@ function MatchupCard({
       />
 
       {/* Country + Name */}
-      <div className="flex flex-col items-center gap-1">
-        <span className="text-2xl">{chad.country}</span>
-        <h2 className="text-center font-heading text-xl font-bold text-[#F8FAFC] sm:text-2xl">
+      <div className="flex flex-col items-center gap-0.5 sm:gap-1">
+        <span className="text-xl sm:text-2xl">{chad.country}</span>
+        <h2 className="text-center font-heading text-base font-bold text-[#F8FAFC] sm:text-2xl">
           {chad.name}
         </h2>
-        <span className="font-mono text-xs text-[#64748B]">{chad.handle}</span>
+        <span className="font-mono text-[10px] text-[#64748B] sm:text-xs">{chad.handle}</span>
       </div>
 
       {/* Tier + Archetypes */}
-      <div className="flex flex-col items-center gap-2">
+      <div className="flex flex-col items-center gap-1.5 sm:gap-2">
         <MogTierBadge tier={chad.mogTier} size="md" />
         <div className="flex flex-wrap justify-center gap-1">
           {chad.archetypes.map((a) => (
@@ -102,7 +102,7 @@ function MatchupCard({
           <span className="font-mono text-[10px] uppercase text-[#64748B]">
             Audience Score
           </span>
-          <span className="font-heading text-2xl font-black text-[#3B82F6]">
+          <span className="font-heading text-xl font-black text-[#3B82F6] sm:text-2xl">
             {audienceScore}
           </span>
         </div>
@@ -110,7 +110,7 @@ function MatchupCard({
 
       {/* Vote prompt */}
       {!result && !disabled && (
-        <span className="mt-auto rounded-md border border-[#1E293B] bg-[#020617] px-4 py-2 font-mono text-xs text-[#64748B] transition-all group-hover:border-[#F59E0B] group-hover:text-[#F59E0B]">
+        <span className="mt-auto rounded-md border border-[#1E293B] bg-[#020617] px-3 py-1.5 font-mono text-[10px] text-[#64748B] transition-all group-hover:border-[#F59E0B] group-hover:text-[#F59E0B] sm:px-4 sm:py-2 sm:text-xs">
           THIS ONE MOGS
         </span>
       )}
@@ -204,13 +204,13 @@ export default function WhoMogsWhoPage() {
       : null;
 
   return (
-    <div className="ambient-glow flex flex-col gap-6">
+    <div className="ambient-glow flex flex-col gap-4 sm:gap-6">
       {/* Header */}
       <div className="relative z-10 text-center">
-        <h1 className="font-heading text-4xl font-black tracking-tight text-[#F8FAFC]">
+        <h1 className="font-heading text-2xl font-black tracking-tight text-[#F8FAFC] sm:text-4xl">
           WHO <span className="text-[#F59E0B]">MOGS</span> WHO
         </h1>
-        <p className="mt-2 font-mono text-sm text-[#64748B]">
+        <p className="mt-1.5 font-mono text-xs text-[#64748B] sm:mt-2 sm:text-sm">
           Pick the chad that mogs. Your votes shape the Audience Score.
         </p>
       </div>
@@ -224,7 +224,7 @@ export default function WhoMogsWhoPage() {
       </div>
 
       {/* Matchup area */}
-      <div className="relative flex flex-col items-stretch gap-4 sm:flex-row sm:gap-6">
+      <div className="relative flex flex-col items-stretch gap-3 sm:flex-row sm:gap-6">
         <MatchupCard
           chad={chadA}
           side="left"
@@ -235,16 +235,16 @@ export default function WhoMogsWhoPage() {
           disabled={voting || !!voteResult}
         />
 
-        {/* VS divider */}
+        {/* VS divider — desktop */}
         <div className="vs-pulse absolute left-1/2 top-1/2 z-10 hidden -translate-x-1/2 -translate-y-1/2 sm:flex">
           <span className="flex h-14 w-14 items-center justify-center rounded-full border border-[#1E293B] bg-[#020617] font-heading text-xl font-black text-[#F59E0B]">
             VS
           </span>
         </div>
 
-        {/* Mobile VS */}
+        {/* VS divider — mobile */}
         <div className="flex items-center justify-center sm:hidden">
-          <span className="font-heading text-xl font-black text-[#F59E0B]">
+          <span className="font-heading text-lg font-black text-[#F59E0B]">
             VS
           </span>
         </div>
@@ -272,7 +272,7 @@ export default function WhoMogsWhoPage() {
         <button
           onClick={newMatchup}
           disabled={voting}
-          className="rounded-md border border-[#1E293B] bg-[#0F172A] px-6 py-2 font-mono text-xs text-[#64748B] transition-colors hover:border-[#64748B] hover:text-[#F8FAFC] disabled:opacity-50"
+          className="rounded-md border border-[#1E293B] bg-[#0F172A] px-4 py-2 font-mono text-xs text-[#64748B] transition-colors hover:border-[#64748B] hover:text-[#F8FAFC] disabled:opacity-50 sm:px-6"
         >
           SKIP — NEW MATCHUP
         </button>

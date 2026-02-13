@@ -49,29 +49,26 @@ export default function Leaderboard({ chads, eloRatings }: LeaderboardProps) {
 
   const sortIndicator = (field: SortField) => {
     if (sortField !== field) return '';
-    return sortDir === 'desc' ? ' ↓' : ' ↑';
+    return sortDir === 'desc' ? ' \u2193' : ' \u2191';
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3 sm:gap-4">
       {/* Controls */}
-      <div className="flex flex-wrap items-center gap-2">
-        {/* Search */}
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
         <input
           type="text"
           placeholder="Search chads..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="rounded-md border border-[#1E293B] bg-[#0F172A] px-3 py-1.5 font-mono text-xs text-[#F8FAFC] placeholder-[#64748B] outline-none focus:border-[#F59E0B]"
+          className="w-full rounded-md border border-[#1E293B] bg-[#0F172A] px-3 py-2 font-mono text-xs text-[#F8FAFC] placeholder-[#64748B] outline-none focus:border-[#F59E0B] sm:w-auto sm:py-1.5"
         />
-
-        {/* Archetype filter */}
         <select
           value={filterArchetype}
           onChange={(e) =>
             setFilterArchetype(e.target.value as ArchetypeKey | 'all')
           }
-          className="rounded-md border border-[#1E293B] bg-[#0F172A] px-3 py-1.5 font-mono text-xs text-[#F8FAFC] outline-none focus:border-[#F59E0B]"
+          className="w-full rounded-md border border-[#1E293B] bg-[#0F172A] px-3 py-2 font-mono text-xs text-[#F8FAFC] outline-none focus:border-[#F59E0B] sm:w-auto sm:py-1.5"
         >
           <option value="all">All Archetypes</option>
           {ARCHETYPE_LIST.map((a) => (
@@ -82,8 +79,8 @@ export default function Leaderboard({ chads, eloRatings }: LeaderboardProps) {
         </select>
       </div>
 
-      {/* Table header */}
-      <div className="grid grid-cols-[40px_36px_1fr_70px_100px_60px_40px] items-center gap-2 px-4 sm:grid-cols-[40px_36px_1.5fr_80px_60px_100px_120px_100px_80px]">
+      {/* Desktop table header */}
+      <div className="hidden items-center gap-2 px-4 sm:grid sm:grid-cols-[40px_36px_1.5fr_80px_60px_100px_120px_100px_80px]">
         <button
           onClick={() => handleSort('rank')}
           className="font-mono text-[10px] uppercase text-[#64748B] hover:text-[#F8FAFC]"
@@ -111,21 +108,50 @@ export default function Leaderboard({ chads, eloRatings }: LeaderboardProps) {
         </button>
         <button
           onClick={() => handleSort('followers')}
-          className="hidden text-right font-mono text-[10px] uppercase text-[#64748B] hover:text-[#F8FAFC] sm:block"
+          className="text-right font-mono text-[10px] uppercase text-[#64748B] hover:text-[#F8FAFC]"
         >
           Followers{sortIndicator('followers')}
         </button>
-        <span className="hidden text-center font-mono text-[10px] uppercase text-[#64748B] sm:block">
+        <span className="text-center font-mono text-[10px] uppercase text-[#64748B]">
           30-Day
         </span>
-        <span className="hidden font-mono text-[10px] uppercase text-[#64748B] sm:block">
+        <span className="font-mono text-[10px] uppercase text-[#64748B]">
           Trend
         </span>
         <button
           onClick={() => handleSort('growth')}
-          className="hidden font-mono text-[10px] uppercase text-[#64748B] hover:text-[#F8FAFC] sm:block"
+          className="font-mono text-[10px] uppercase text-[#64748B] hover:text-[#F8FAFC]"
         >
           Growth{sortIndicator('growth')}
+        </button>
+      </div>
+
+      {/* Mobile table header */}
+      <div className="grid grid-cols-[28px_28px_1fr_50px_40px] items-center gap-1.5 px-3 sm:hidden">
+        <button
+          onClick={() => handleSort('rank')}
+          className="font-mono text-[9px] uppercase text-[#64748B]"
+        >
+          #
+        </button>
+        <span />
+        <button
+          onClick={() => handleSort('name')}
+          className="text-left font-mono text-[9px] uppercase text-[#64748B]"
+        >
+          Name
+        </button>
+        <button
+          onClick={() => handleSort('chadScore')}
+          className="text-right font-mono text-[9px] uppercase text-[#64748B]"
+        >
+          Score
+        </button>
+        <button
+          onClick={() => handleSort('audienceScore')}
+          className="text-center font-mono text-[9px] uppercase text-[#3B82F6]"
+        >
+          Aud.
         </button>
       </div>
 

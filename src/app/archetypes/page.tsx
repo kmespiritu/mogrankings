@@ -16,12 +16,12 @@ function getChadsByArchetype(archetypeKey: ArchetypeKey) {
 
 export default function ArchetypesPage() {
   return (
-    <div className="ambient-glow flex flex-col gap-8">
+    <div className="ambient-glow flex flex-col gap-6 sm:gap-8">
       <div className="relative z-10 text-center">
-        <h1 className="font-heading text-4xl font-black tracking-tight text-[#F8FAFC]">
+        <h1 className="font-heading text-2xl font-black tracking-tight text-[#F8FAFC] sm:text-4xl">
           ARCHETYPE <span className="text-[#F59E0B]">LEADERBOARDS</span>
         </h1>
-        <p className="mt-2 font-mono text-sm text-[#64748B]">
+        <p className="mt-1.5 font-mono text-xs text-[#64748B] sm:mt-2 sm:text-sm">
           Every chad classified. Every aesthetic quantified.
         </p>
       </div>
@@ -32,9 +32,9 @@ export default function ArchetypesPage() {
 
         return (
           <section key={archetype.key}>
-            <div className="mb-4 flex items-center gap-3">
+            <div className="mb-3 flex items-center gap-2 sm:mb-4 sm:gap-3">
               <span
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-lg"
+                className="flex h-7 w-7 items-center justify-center rounded-lg text-base sm:h-8 sm:w-8 sm:text-lg"
                 style={{
                   backgroundColor: archetype.color + '22',
                   color: archetype.color,
@@ -43,7 +43,7 @@ export default function ArchetypesPage() {
                 {archetype.icon}
               </span>
               <h2
-                className="font-heading text-xl font-bold"
+                className="font-heading text-lg font-bold sm:text-xl"
                 style={{ color: archetype.color }}
               >
                 {archetype.label.toUpperCase()}
@@ -52,7 +52,7 @@ export default function ArchetypesPage() {
                 {chads.length} chad{chads.length !== 1 ? 's' : ''}
               </span>
             </div>
-            <div className="animate-stagger grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="animate-stagger grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
               {chads.map((chad, i) => (
                 <ChadCard key={chad.id} chad={chad} rank={i + 1} />
               ))}
