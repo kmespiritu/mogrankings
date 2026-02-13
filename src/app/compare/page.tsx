@@ -7,6 +7,7 @@ import { Chad } from '@/lib/types';
 import { getRandomMatchup } from '@/lib/matchmaking';
 import { eloToAudienceScore } from '@/lib/elo';
 import { useEloRatings } from '@/lib/useEloRatings';
+import { useSoundEffects } from '@/lib/useSoundEffects';
 import MogTierBadge from '@/components/MogTierBadge';
 import ArchetypeTag from '@/components/ArchetypeTag';
 
@@ -115,11 +116,13 @@ function MatchupCard({
         </span>
       )}
 
-      {/* Result label */}
+      {/* Result label — enhanced with slam/fade animations */}
       {result && (
         <span
-          className={`mt-auto font-heading text-sm font-bold ${
-            isWinner ? 'text-[#22C55E]' : 'text-[#EF4444]'
+          className={`mt-auto font-heading font-bold ${
+            isWinner
+              ? 'mog-slam text-xl text-[#22C55E] sm:text-3xl'
+              : 'mog-fade text-sm text-[#EF4444]'
           }`}
         >
           {isWinner ? 'MOGS' : 'MOGGED'}
@@ -131,6 +134,7 @@ function MatchupCard({
 
 export default function WhoMogsWhoPage() {
   const { ratings, refetch } = useEloRatings();
+  const { playMogSound, playMoggedSound, isMuted, toggleMute } = useSoundEffects();
   const [matchup, setMatchup] = useState<[Chad, Chad] | null>(null);
   const [voteResult, setVoteResult] = useState<VoteResult | null>(null);
   const [voting, setVoting] = useState(false);
@@ -170,6 +174,11 @@ export default function WhoMogsWhoPage() {
 
       setVoteResult(data as VoteResult);
       setSessionVotes((prev) => prev + 1);
+
+      // Play sound effects
+      playMogSound();
+      setTimeout(() => playMoggedSound(), 200);
+
       await refetch();
 
       // Auto-advance after 2 seconds
@@ -215,16 +224,29 @@ export default function WhoMogsWhoPage() {
         </p>
       </div>
 
-      {/* Session stats */}
-      <div className="flex justify-center gap-4">
+      {/* Session stats + Sound toggle */}
+      <div className="flex justify-center gap-2 sm:gap-4">
         <span className="rounded-md border border-[#1E293B] bg-[#0F172A] px-3 py-1.5 font-mono text-xs text-[#64748B]">
           Votes this session:{' '}
           <span className="text-[#F59E0B]">{sessionVotes}</span>
         </span>
+        <button
+          onClick={toggleMute}
+          className="rounded-md border border-[#1E293B] bg-[#0F172A] px-3 py-1.5 font-mono text-xs text-[#64748B] transition-colors hover:border-[#F59E0B] hover:text-[#F59E0B]"
+          aria-label={isMuted ? 'Unmute sounds' : 'Mute sounds'}
+          title={isMuted ? 'Unmute sounds' : 'Mute sounds'}
+        >
+          {isMuted ? '\uD83D\uDD07' : '\uD83D\uDD0A'}
+        </button>
       </div>
 
-      {/* Matchup area */}
-      <div className="relative flex flex-col items-stretch gap-3 sm:flex-row sm:gap-6">
+      {/* Matchup area — screen shake on vote result */}
+      <div
+        key={sessionVotes}
+        className={`relative flex flex-col items-stretch gap-3 sm:flex-row sm:gap-6 ${
+          voteResult ? 'screen-shake' : ''
+        }`}
+      >
         <MatchupCard
           chad={chadA}
           side="left"
