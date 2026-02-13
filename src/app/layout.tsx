@@ -22,10 +22,10 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'ChadBlade — The Definitive Chad Ranking Platform',
+  title: 'Mog Rankings — The Definitive Mog Ranking Platform',
   description:
     'Real-time social media analytics, composite scoring, and archetype classification for the internet\'s most aesthetic individuals.',
-  keywords: ['chad', 'leaderboard', 'aesthetics', 'looksmaxxing', 'social blade', 'rankings'],
+  keywords: ['mog', 'rankings', 'leaderboard', 'aesthetics', 'looksmaxxing', 'psl', 'mogger'],
 };
 
 export default function RootLayout({
@@ -45,7 +45,7 @@ export default function RootLayout({
             WE&apos;RE ALL GONNA MAKE IT.
           </p>
           <p className="mt-2 font-mono text-[10px] text-[#334155]">
-            ChadBlade v1.0 — Not affiliated with Social Blade
+            Mog Rankings v1.0
           </p>
         </footer>
       </body>

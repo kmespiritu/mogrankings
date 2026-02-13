@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { SEED_CHADS } from '@/data/seed';
 import { getChadBySlug, formatNum, totalFollowers } from '@/lib/utils';
 import MogTierBadge from '@/components/MogTierBadge';
@@ -22,8 +23,8 @@ export async function generateMetadata({ params }: ChadPageProps) {
   if (!chad) return { title: 'Chad Not Found' };
 
   return {
-    title: `${chad.name} — ChadBlade Stats & Rankings`,
-    description: `${chad.name} stats, social media metrics, Chad Score, and archetype analysis on ChadBlade.`,
+    title: `${chad.name} — Mog Rankings Stats`,
+    description: `${chad.name} stats, social media metrics, Mog Score, and archetype analysis on Mog Rankings.`,
   };
 }
 
@@ -57,6 +58,13 @@ export default async function ChadProfilePage({ params }: ChadPageProps) {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-3">
+              <Image
+                src={chad.image}
+                alt={chad.name}
+                width={56}
+                height={56}
+                className="rounded-full border-2 border-[#1E293B]"
+              />
               <span className="text-3xl">{chad.country}</span>
               <h1 className="font-heading text-3xl font-black text-[#F8FAFC]">
                 {chad.name}
@@ -82,7 +90,7 @@ export default async function ChadProfilePage({ params }: ChadPageProps) {
           {/* Score card */}
           <div className="flex flex-col items-center rounded-lg border border-[#1E293B] bg-[#020617] p-5">
             <span className="font-mono text-[10px] uppercase tracking-wider text-[#64748B]">
-              Chad Score
+              Mog Score
             </span>
             <span className="font-heading text-5xl font-black text-[#F59E0B]">
               {chad.score.chadScore}

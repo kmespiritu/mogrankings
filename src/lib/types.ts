@@ -1,13 +1,10 @@
 export type Platform = 'instagram' | 'youtube' | 'tiktok' | 'kick' | 'x';
 
 export type ArchetypeKey =
-  | 'clavicular'
-  | 'androgenic'
   | 'prettyboy'
-  | 'classic'
-  | 'zyzzcore'
-  | 'huntereyes'
-  | 'mogger';
+  | 'gigachad'
+  | 'mogger'
+  | 'pslgod';
 
 export type MogTier = 'S+' | 'S' | 'A' | 'B' | 'C' | '∞';
 
@@ -39,6 +36,7 @@ export interface Chad {
   name: string;
   slug: string;
   handle: string;
+  image: string;
   bio: string;
   country: string;
   archetypes: ArchetypeKey[];

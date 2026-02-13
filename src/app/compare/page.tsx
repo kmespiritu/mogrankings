@@ -71,7 +71,7 @@ function CompareSlot({
       <div className="flex items-end justify-between">
         <div>
           <div className="font-mono text-[10px] uppercase text-[#64748B]">
-            Chad Score
+            Mog Score
           </div>
           <div className="font-heading text-3xl font-black text-[#F59E0B]">
             {chad.score.chadScore}
@@ -134,7 +134,7 @@ export default function ComparePage() {
           <div className="flex flex-col divide-y divide-[#1E293B]">
             {[
               {
-                label: 'Chad Score',
+                label: 'Mog Score',
                 a: chadA!.score.chadScore,
                 b: chadB!.score.chadScore,
               },

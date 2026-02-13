@@ -110,13 +110,14 @@ export default function Leaderboard({ chads }: LeaderboardProps) {
       </div>
 
       {/* Table header */}
-      <div className="grid grid-cols-[40px_1fr_80px_100px_120px_80px_40px] items-center gap-3 px-4 sm:grid-cols-[40px_1.5fr_100px_120px_140px_120px_80px_40px]">
+      <div className="grid grid-cols-[40px_36px_1fr_70px_100px_80px_40px] items-center gap-2 px-4 sm:grid-cols-[40px_36px_1.5fr_80px_100px_120px_100px_80px_40px]">
         <button
           onClick={() => handleSort('rank')}
           className="font-mono text-[10px] uppercase text-[#64748B] hover:text-[#F8FAFC]"
         >
           #{sortIndicator('rank')}
         </button>
+        <span />
         <button
           onClick={() => handleSort('name')}
           className="text-left font-mono text-[10px] uppercase text-[#64748B] hover:text-[#F8FAFC]"

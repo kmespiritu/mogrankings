@@ -4,8 +4,8 @@ import { ArchetypeKey } from '@/lib/types';
 import ChadCard from '@/components/ChadCard';
 
 export const metadata = {
-  title: 'Archetype Leaderboards — ChadBlade',
-  description: 'Browse Chads by aesthetic archetype: Clavicular, Androgenic, Pretty Boy, Classic, Zyzz-core, Hunter Eyes, and Mogger.',
+  title: 'Archetype Leaderboards — Mog Rankings',
+  description: 'Browse ranked individuals by aesthetic archetype: Pretty Boy, Giga Chad, Mogger, and PSL God.',
 };
 
 function getChadsByArchetype(archetypeKey: ArchetypeKey) {

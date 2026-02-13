@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Chad } from '@/lib/types';
 import { formatNum, totalFollowers } from '@/lib/utils';
 import MogTierBadge from './MogTierBadge';
@@ -20,12 +21,19 @@ export default function ChadCard({ chad, rank }: ChadCardProps) {
       href={`/chad/${chad.slug}`}
       className="group flex flex-col gap-3 rounded-lg border border-[#1E293B] bg-[#0F172A] p-4 transition-all hover:border-[#F59E0B]/30 hover:shadow-[0_0_20px_rgba(245,158,11,0.05)]"
     >
-      {/* Top row: rank + name + tier */}
+      {/* Top row: rank + photo + name + tier */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-2">
           <span className="font-mono text-xs text-[#64748B]">
             {chad.isLegacy ? '∞' : `#${rank}`}
           </span>
+          <Image
+            src={chad.image}
+            alt={chad.name}
+            width={32}
+            height={32}
+            className="rounded-full border border-[#1E293B]"
+          />
           <span className="text-lg leading-none">{chad.country}</span>
         </div>
         <MogTierBadge tier={chad.mogTier} size="md" />
@@ -50,7 +58,7 @@ export default function ChadCard({ chad, rank }: ChadCardProps) {
       <div className="flex items-end justify-between">
         <div>
           <div className="font-mono text-[10px] uppercase text-[#64748B]">
-            Chad Score
+            Mog Score
           </div>
           <div className="font-heading text-2xl font-black text-[#F59E0B]">
             {chad.score.chadScore}

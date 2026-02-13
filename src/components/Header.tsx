@@ -17,10 +17,10 @@ export default function Header() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
         <Link href="/" className="flex items-center gap-2">
           <span className="font-heading text-2xl font-black tracking-tight text-[#F59E0B]">
-            CHAD
+            MOG
           </span>
           <span className="font-heading text-2xl font-black tracking-tight text-[#F8FAFC]">
-            BLADE
+            RANKINGS
           </span>
           <span className="ml-1 rounded bg-[#F59E0B]/10 px-1.5 py-0.5 font-mono text-[10px] text-[#F59E0B]">
             v1.0

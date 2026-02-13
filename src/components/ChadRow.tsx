@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Chad } from '@/lib/types';
 import { formatNum, totalFollowers } from '@/lib/utils';
 import MogTierBadge from './MogTierBadge';
@@ -21,11 +22,22 @@ export default function ChadRow({ chad, rank, onCompare }: ChadRowProps) {
   return (
     <Link
       href={`/chad/${chad.slug}`}
-      className="group grid grid-cols-[40px_1fr_80px_100px_120px_80px_40px] items-center gap-3 border-b border-[#1E293B] px-4 py-3 transition-colors hover:bg-[#0F172A]/60 sm:grid-cols-[40px_1.5fr_100px_120px_140px_120px_80px_40px]"
+      className="group grid grid-cols-[40px_36px_1fr_70px_100px_80px_40px] items-center gap-2 border-b border-[#1E293B] px-4 py-3 transition-colors hover:bg-[#0F172A]/60 sm:grid-cols-[40px_36px_1.5fr_80px_100px_120px_100px_80px_40px]"
     >
       {/* Rank */}
       <div className="font-mono text-sm font-bold text-[#64748B]">
         {chad.isLegacy ? '∞' : `#${rank}`}
+      </div>
+
+      {/* Profile Photo */}
+      <div className="flex-shrink-0">
+        <Image
+          src={chad.image}
+          alt={chad.name}
+          width={36}
+          height={36}
+          className="rounded-full border border-[#1E293B]"
+        />
       </div>
 
       {/* Name + handle + archetypes */}
@@ -54,7 +66,7 @@ export default function ChadRow({ chad, rank, onCompare }: ChadRowProps) {
         </div>
       </div>
 
-      {/* Chad Score */}
+      {/* Mog Score */}
       <div className="text-right font-heading text-lg font-black text-[#F59E0B]">
         {chad.score.chadScore}
       </div>
