@@ -50,8 +50,8 @@ CREATE POLICY "votes_select" ON votes
 CREATE POLICY "votes_insert" ON votes
   FOR INSERT TO anon WITH CHECK (true);
 
--- Seed all 23 chads with initial ELO of 1500
--- IDs match seed.ts: '1' through '23'
+-- Seed all 20 chads with initial ELO of 1500
+-- IDs match seed.ts
 INSERT INTO elo_ratings (chad_id, elo_rating, wins, losses, total_votes) VALUES
   ('1', 1500.00, 0, 0, 0),   -- Zyzz (legacy, won't be in matchups but tracked)
   ('2', 1500.00, 0, 0, 0),   -- Chico Lachowski
@@ -68,11 +68,8 @@ INSERT INTO elo_ratings (chad_id, elo_rating, wins, losses, total_votes) VALUES
   ('13', 1500.00, 0, 0, 0),  -- Henry Cavill
   ('14', 1500.00, 0, 0, 0),  -- Nick Bateman
   ('15', 1500.00, 0, 0, 0),  -- Toni Mahfud
-  ('16', 1500.00, 0, 0, 0),  -- Dillon Danis
   ('17', 1500.00, 0, 0, 0),  -- GigaChad (legacy)
   ('18', 1500.00, 0, 0, 0),  -- Clavicular
   ('19', 1500.00, 0, 0, 0),  -- Dragomaxxer
   ('20', 1500.00, 0, 0, 0),  -- Androgenic
-  ('21', 1500.00, 0, 0, 0),  -- Syrian Psycho
-  ('22', 1500.00, 0, 0, 0),  -- Dillon Latham
-  ('23', 1500.00, 0, 0, 0);  -- Hamza Ahmed
+  ('21', 1500.00, 0, 0, 0);  -- Syrian Psycho
