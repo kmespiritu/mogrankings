@@ -1,4 +1,5 @@
-import { Chad, Platform, PlatformMetric } from './types';
+import { Chad, EloRating, Platform, PlatformMetric } from './types';
+import { eloToAudienceScore } from './elo';
 
 export function formatNum(n: number): string {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
@@ -46,7 +47,8 @@ export function getChadBySlug(chads: Chad[], slug: string): Chad | undefined {
 export function sortChads(
   chads: Chad[],
   field: string,
-  direction: 'asc' | 'desc'
+  direction: 'asc' | 'desc',
+  eloRatings?: Map<string, EloRating>
 ): Chad[] {
   const sorted = [...chads].sort((a, b) => {
     let aVal: number;
@@ -69,6 +71,13 @@ export function sortChads(
         aVal = a.score.monthlyGrowth;
         bVal = b.score.monthlyGrowth;
         break;
+      case 'audienceScore': {
+        const aElo = eloRatings?.get(a.id);
+        const bElo = eloRatings?.get(b.id);
+        aVal = aElo ? eloToAudienceScore(aElo.elo_rating) : -1;
+        bVal = bElo ? eloToAudienceScore(bElo.elo_rating) : -1;
+        break;
+      }
       default:
         aVal = a.score.chadScore;
         bVal = b.score.chadScore;

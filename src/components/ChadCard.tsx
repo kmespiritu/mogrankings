@@ -1,20 +1,27 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Chad } from '@/lib/types';
+import { Chad, EloRating } from '@/lib/types';
 import { formatNum, totalFollowers } from '@/lib/utils';
+import { eloToAudienceScore } from '@/lib/elo';
 import MogTierBadge from './MogTierBadge';
 import ArchetypeTag from './ArchetypeTag';
 import TrendBadge from './TrendBadge';
 import Sparkline from './Sparkline';
 import PlatformBar from './PlatformBar';
+import AudienceScoreBadge from './AudienceScoreBadge';
 
 interface ChadCardProps {
   chad: Chad;
   rank: number;
+  eloRating?: EloRating;
 }
 
-export default function ChadCard({ chad, rank }: ChadCardProps) {
+export default function ChadCard({ chad, rank, eloRating }: ChadCardProps) {
   const total = totalFollowers(chad.platforms);
+  const audienceScore =
+    eloRating && eloRating.total_votes > 0
+      ? eloToAudienceScore(eloRating.elo_rating)
+      : null;
 
   return (
     <Link
@@ -54,14 +61,24 @@ export default function ChadCard({ chad, rank }: ChadCardProps) {
         ))}
       </div>
 
-      {/* Score + sparkline */}
+      {/* Dual scores + sparkline */}
       <div className="flex items-end justify-between">
-        <div>
-          <div className="font-mono text-[10px] uppercase text-[#64748B]">
-            Mog Score
+        <div className="flex items-end gap-3">
+          <div>
+            <div className="font-mono text-[10px] uppercase text-[#64748B]">
+              Mog Score
+            </div>
+            <div className="font-heading text-2xl font-black text-[#F59E0B]">
+              {chad.score.chadScore}
+            </div>
           </div>
-          <div className="font-heading text-2xl font-black text-[#F59E0B]">
-            {chad.score.chadScore}
+          <div>
+            <div className="font-mono text-[10px] uppercase text-[#64748B]">
+              Audience
+            </div>
+            <div className="font-heading text-lg font-bold">
+              <AudienceScoreBadge score={audienceScore} size="md" />
+            </div>
           </div>
         </div>
         <Sparkline

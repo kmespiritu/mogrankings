@@ -1,6 +1,6 @@
 import { SEED_CHADS } from '@/data/seed';
 import StatsBar from '@/components/StatsBar';
-import Leaderboard from '@/components/Leaderboard';
+import LeaderboardWithElo from '@/components/LeaderboardWithElo';
 
 export default function HomePage() {
   const chads = SEED_CHADS;
@@ -21,7 +21,7 @@ export default function HomePage() {
       <StatsBar chads={chads} />
 
       {/* Leaderboard */}
-      <Leaderboard chads={chads} />
+      <LeaderboardWithElo chads={chads} />
     </div>
   );
 }

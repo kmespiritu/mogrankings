@@ -1,25 +1,23 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Chad, ArchetypeKey, SortField } from '@/lib/types';
+import { Chad, ArchetypeKey, EloRating, SortField } from '@/lib/types';
 import { sortChads } from '@/lib/utils';
 import { ARCHETYPE_LIST } from '@/lib/archetypes';
 import ChadRow from './ChadRow';
-import CompareModal from './CompareModal';
 
 interface LeaderboardProps {
   chads: Chad[];
+  eloRatings?: Map<string, EloRating>;
 }
 
-export default function Leaderboard({ chads }: LeaderboardProps) {
+export default function Leaderboard({ chads, eloRatings }: LeaderboardProps) {
   const [sortField, setSortField] = useState<SortField>('chadScore');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   const [filterArchetype, setFilterArchetype] = useState<ArchetypeKey | 'all'>(
     'all'
   );
   const [searchQuery, setSearchQuery] = useState('');
-  const [compareList, setCompareList] = useState<Chad[]>([]);
-  const [showCompare, setShowCompare] = useState(false);
 
   const filtered = useMemo(() => {
     let result = chads;
@@ -37,8 +35,8 @@ export default function Leaderboard({ chads }: LeaderboardProps) {
       );
     }
 
-    return sortChads(result, sortField, sortDir);
-  }, [chads, filterArchetype, searchQuery, sortField, sortDir]);
+    return sortChads(result, sortField, sortDir, eloRatings);
+  }, [chads, filterArchetype, searchQuery, sortField, sortDir, eloRatings]);
 
   function handleSort(field: SortField) {
     if (sortField === field) {
@@ -46,21 +44,6 @@ export default function Leaderboard({ chads }: LeaderboardProps) {
     } else {
       setSortField(field);
       setSortDir('desc');
-    }
-  }
-
-  function handleCompare(chad: Chad) {
-    setCompareList((prev) => {
-      if (prev.find((c) => c.id === chad.id)) {
-        return prev.filter((c) => c.id !== chad.id);
-      }
-      if (prev.length >= 2) {
-        return [prev[1], chad];
-      }
-      return [...prev, chad];
-    });
-    if (compareList.length >= 1) {
-      setShowCompare(true);
     }
   }
 
@@ -97,20 +80,10 @@ export default function Leaderboard({ chads }: LeaderboardProps) {
             </option>
           ))}
         </select>
-
-        {/* Compare badge */}
-        {compareList.length > 0 && (
-          <button
-            onClick={() => setShowCompare(true)}
-            className="ml-auto rounded-md border border-[#F59E0B] bg-[#F59E0B]/10 px-3 py-1.5 font-mono text-xs text-[#F59E0B] transition-colors hover:bg-[#F59E0B]/20"
-          >
-            Compare ({compareList.length}/2)
-          </button>
-        )}
       </div>
 
       {/* Table header */}
-      <div className="grid grid-cols-[40px_36px_1fr_70px_100px_80px_40px] items-center gap-2 px-4 sm:grid-cols-[40px_36px_1.5fr_80px_100px_120px_100px_80px_40px]">
+      <div className="grid grid-cols-[40px_36px_1fr_70px_100px_60px_40px] items-center gap-2 px-4 sm:grid-cols-[40px_36px_1.5fr_80px_60px_100px_120px_100px_80px]">
         <button
           onClick={() => handleSort('rank')}
           className="font-mono text-[10px] uppercase text-[#64748B] hover:text-[#F8FAFC]"
@@ -131,12 +104,18 @@ export default function Leaderboard({ chads }: LeaderboardProps) {
           Score{sortIndicator('chadScore')}
         </button>
         <button
+          onClick={() => handleSort('audienceScore')}
+          className="text-center font-mono text-[10px] uppercase text-[#3B82F6] hover:text-[#60A5FA]"
+        >
+          Aud.{sortIndicator('audienceScore')}
+        </button>
+        <button
           onClick={() => handleSort('followers')}
           className="hidden text-right font-mono text-[10px] uppercase text-[#64748B] hover:text-[#F8FAFC] sm:block"
         >
           Followers{sortIndicator('followers')}
         </button>
-        <span className="text-center font-mono text-[10px] uppercase text-[#64748B]">
+        <span className="hidden text-center font-mono text-[10px] uppercase text-[#64748B] sm:block">
           30-Day
         </span>
         <span className="hidden font-mono text-[10px] uppercase text-[#64748B] sm:block">
@@ -148,7 +127,6 @@ export default function Leaderboard({ chads }: LeaderboardProps) {
         >
           Growth{sortIndicator('growth')}
         </button>
-        <span />
       </div>
 
       {/* Rows */}
@@ -158,7 +136,7 @@ export default function Leaderboard({ chads }: LeaderboardProps) {
             key={chad.id}
             chad={chad}
             rank={i + 1}
-            onCompare={handleCompare}
+            eloRating={eloRatings?.get(chad.id)}
           />
         ))}
         {filtered.length === 0 && (
@@ -167,17 +145,6 @@ export default function Leaderboard({ chads }: LeaderboardProps) {
           </div>
         )}
       </div>
-
-      {/* Compare Modal */}
-      {showCompare && compareList.length >= 2 && (
-        <CompareModal
-          chads={compareList}
-          onRemove={(id) =>
-            setCompareList((prev) => prev.filter((c) => c.id !== id))
-          }
-          onClose={() => setShowCompare(false)}
-        />
-      )}
     </div>
   );
 }

@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 const NAV_ITEMS = [
   { href: '/', label: 'Leaderboard' },
   { href: '/archetypes', label: 'Archetypes' },
-  { href: '/compare', label: 'Compare' },
+  { href: '/compare', label: 'Who Mogs Who' },
 ];
 
 export default function Header() {

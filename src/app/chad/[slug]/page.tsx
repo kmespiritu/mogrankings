@@ -8,6 +8,7 @@ import ArchetypeTag from '@/components/ArchetypeTag';
 import TrendBadge from '@/components/TrendBadge';
 import Sparkline from '@/components/Sparkline';
 import PlatformBar from '@/components/PlatformBar';
+import AudienceScoreCard from '@/components/AudienceScoreCard';
 
 interface ChadPageProps {
   params: Promise<{ slug: string }>;
@@ -87,23 +88,29 @@ export default async function ChadProfilePage({ params }: ChadPageProps) {
             </div>
           </div>
 
-          {/* Score card */}
-          <div className="flex flex-col items-center rounded-lg border border-[#1E293B] bg-[#020617] p-5">
-            <span className="font-mono text-[10px] uppercase tracking-wider text-[#64748B]">
-              Mog Score
-            </span>
-            <span className="font-heading text-5xl font-black text-[#F59E0B]">
-              {chad.score.chadScore}
-            </span>
-            <span className="mt-1 font-mono text-xs text-[#64748B]">
-              Rank #{chad.isLegacy ? '∞' : rank}
-            </span>
-            <div className="mt-2">
-              <TrendBadge
-                trend={chad.score.trend}
-                growth={chad.score.monthlyGrowth}
-              />
+          {/* Score cards */}
+          <div className="flex flex-col gap-3">
+            {/* Mog Score */}
+            <div className="flex flex-col items-center rounded-lg border border-[#1E293B] bg-[#020617] p-5">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-[#64748B]">
+                Mog Score
+              </span>
+              <span className="font-heading text-5xl font-black text-[#F59E0B]">
+                {chad.score.chadScore}
+              </span>
+              <span className="mt-1 font-mono text-xs text-[#64748B]">
+                Rank #{chad.isLegacy ? '∞' : rank}
+              </span>
+              <div className="mt-2">
+                <TrendBadge
+                  trend={chad.score.trend}
+                  growth={chad.score.monthlyGrowth}
+                />
+              </div>
             </div>
+
+            {/* Audience Score */}
+            <AudienceScoreCard chadId={chad.id} />
           </div>
         </div>
       </div>

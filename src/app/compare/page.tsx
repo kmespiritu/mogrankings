@@ -1,205 +1,282 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import Image from 'next/image';
 import { SEED_CHADS } from '@/data/seed';
 import { Chad } from '@/lib/types';
-import { formatNum, totalFollowers } from '@/lib/utils';
+import { getRandomMatchup } from '@/lib/matchmaking';
+import { eloToAudienceScore } from '@/lib/elo';
+import { useEloRatings } from '@/lib/useEloRatings';
 import MogTierBadge from '@/components/MogTierBadge';
 import ArchetypeTag from '@/components/ArchetypeTag';
-import TrendBadge from '@/components/TrendBadge';
-import Sparkline from '@/components/Sparkline';
-import PlatformBar from '@/components/PlatformBar';
 
-function CompareSlot({
+interface VoteResult {
+  winner: { chad_id: string; elo_before: number; elo_after: number; change: number };
+  loser: { chad_id: string; elo_before: number; elo_after: number; change: number };
+}
+
+function MatchupCard({
   chad,
-  onSelect,
-  onClear,
-  label,
+  side,
+  audienceScore,
+  onVote,
+  result,
+  isWinner,
+  disabled,
 }: {
-  chad: Chad | null;
-  onSelect: (chad: Chad) => void;
-  onClear: () => void;
-  label: string;
+  chad: Chad;
+  side: 'left' | 'right';
+  audienceScore: number | null;
+  onVote: () => void;
+  result: VoteResult | null;
+  isWinner: boolean | null;
+  disabled: boolean;
 }) {
-  if (!chad) {
-    return (
-      <div className="flex flex-col gap-3 rounded-lg border border-dashed border-[#1E293B] bg-[#0F172A]/50 p-6">
-        <span className="font-mono text-xs text-[#64748B]">{label}</span>
-        <select
-          onChange={(e) => {
-            const c = SEED_CHADS.find((c) => c.id === e.target.value);
-            if (c) onSelect(c);
-          }}
-          className="rounded-md border border-[#1E293B] bg-[#0F172A] px-3 py-2 font-mono text-sm text-[#F8FAFC] outline-none focus:border-[#F59E0B]"
-          defaultValue=""
+  const eloChange = result
+    ? isWinner
+      ? result.winner.change
+      : result.loser.change
+    : null;
+
+  return (
+    <button
+      onClick={onVote}
+      disabled={disabled}
+      className={`matchup-card group relative flex flex-1 flex-col items-center gap-4 rounded-xl border p-6 transition-all sm:p-8 ${
+        result
+          ? isWinner
+            ? 'border-[#22C55E] bg-[#22C55E]/5'
+            : 'border-[#EF4444]/30 bg-[#EF4444]/5'
+          : 'border-[#1E293B] bg-[#0F172A] hover:border-[#F59E0B]/50 hover:shadow-[0_0_30px_rgba(245,158,11,0.08)]'
+      } ${disabled ? 'cursor-default' : 'cursor-pointer'}`}
+    >
+      {/* ELO change overlay */}
+      {eloChange !== null && (
+        <div
+          className={`elo-change-anim absolute top-4 ${side === 'left' ? 'right-4' : 'left-4'} font-heading text-2xl font-black ${
+            eloChange >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'
+          }`}
         >
-          <option value="" disabled>
-            Select a Chad...
-          </option>
-          {SEED_CHADS.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
+          {eloChange >= 0 ? '+' : ''}
+          {eloChange.toFixed(1)}
+        </div>
+      )}
+
+      {/* Profile photo */}
+      <Image
+        src={chad.image}
+        alt={chad.name}
+        width={96}
+        height={96}
+        className={`rounded-full border-2 transition-all ${
+          result
+            ? isWinner
+              ? 'border-[#22C55E]'
+              : 'border-[#EF4444]/40 opacity-60'
+            : 'border-[#1E293B] group-hover:border-[#F59E0B]'
+        }`}
+      />
+
+      {/* Country + Name */}
+      <div className="flex flex-col items-center gap-1">
+        <span className="text-2xl">{chad.country}</span>
+        <h2 className="text-center font-heading text-xl font-bold text-[#F8FAFC] sm:text-2xl">
+          {chad.name}
+        </h2>
+        <span className="font-mono text-xs text-[#64748B]">{chad.handle}</span>
+      </div>
+
+      {/* Tier + Archetypes */}
+      <div className="flex flex-col items-center gap-2">
+        <MogTierBadge tier={chad.mogTier} size="md" />
+        <div className="flex flex-wrap justify-center gap-1">
+          {chad.archetypes.map((a) => (
+            <ArchetypeTag key={a} archetypeKey={a} />
           ))}
-        </select>
+        </div>
+      </div>
+
+      {/* Audience Score */}
+      {audienceScore !== null && (
+        <div className="flex flex-col items-center">
+          <span className="font-mono text-[10px] uppercase text-[#64748B]">
+            Audience Score
+          </span>
+          <span className="font-heading text-2xl font-black text-[#3B82F6]">
+            {audienceScore}
+          </span>
+        </div>
+      )}
+
+      {/* Vote prompt */}
+      {!result && !disabled && (
+        <span className="mt-auto rounded-md border border-[#1E293B] bg-[#020617] px-4 py-2 font-mono text-xs text-[#64748B] transition-all group-hover:border-[#F59E0B] group-hover:text-[#F59E0B]">
+          THIS ONE MOGS
+        </span>
+      )}
+
+      {/* Result label */}
+      {result && (
+        <span
+          className={`mt-auto font-heading text-sm font-bold ${
+            isWinner ? 'text-[#22C55E]' : 'text-[#EF4444]'
+          }`}
+        >
+          {isWinner ? 'MOGS' : 'MOGGED'}
+        </span>
+      )}
+    </button>
+  );
+}
+
+export default function WhoMogsWhoPage() {
+  const { ratings, refetch } = useEloRatings();
+  const [matchup, setMatchup] = useState<[Chad, Chad] | null>(null);
+  const [voteResult, setVoteResult] = useState<VoteResult | null>(null);
+  const [voting, setVoting] = useState(false);
+  const [sessionVotes, setSessionVotes] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+
+  const newMatchup = useCallback(() => {
+    setVoteResult(null);
+    setError(null);
+    setMatchup(getRandomMatchup(SEED_CHADS));
+  }, []);
+
+  // Load first matchup
+  useEffect(() => {
+    newMatchup();
+  }, [newMatchup]);
+
+  async function handleVote(winnerId: string, loserId: string) {
+    if (voting || voteResult) return;
+    setVoting(true);
+    setError(null);
+
+    try {
+      const res = await fetch('/api/vote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ winnerId, loserId }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || 'Vote failed');
+        setVoting(false);
+        return;
+      }
+
+      setVoteResult(data as VoteResult);
+      setSessionVotes((prev) => prev + 1);
+      await refetch();
+
+      // Auto-advance after 2 seconds
+      setTimeout(() => {
+        newMatchup();
+      }, 2000);
+    } catch {
+      setError('Network error. Please try again.');
+    } finally {
+      setVoting(false);
+    }
+  }
+
+  if (!matchup) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <span className="font-mono text-sm text-[#64748B]">Loading matchup...</span>
       </div>
     );
   }
 
-  return (
-    <div className="flex flex-col gap-3 rounded-lg border border-[#1E293B] bg-[#0F172A] p-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl">{chad.country}</span>
-          <span className="font-heading text-lg font-bold text-[#F8FAFC]">
-            {chad.name}
-          </span>
-          <MogTierBadge tier={chad.mogTier} />
-        </div>
-        <button
-          onClick={onClear}
-          className="rounded px-2 py-1 font-mono text-xs text-[#64748B] hover:text-[#EF4444]"
-        >
-          ✕
-        </button>
-      </div>
-      <div className="flex flex-wrap gap-1">
-        {chad.archetypes.map((a) => (
-          <ArchetypeTag key={a} archetypeKey={a} />
-        ))}
-      </div>
-      <div className="flex items-end justify-between">
-        <div>
-          <div className="font-mono text-[10px] uppercase text-[#64748B]">
-            Mog Score
-          </div>
-          <div className="font-heading text-3xl font-black text-[#F59E0B]">
-            {chad.score.chadScore}
-          </div>
-        </div>
-        <Sparkline data={chad.sparklineData} trend={chad.score.trend} />
-      </div>
-      <PlatformBar platforms={chad.platforms} />
-      <div className="flex items-center justify-between text-sm">
-        <span className="font-mono text-xs text-[#64748B]">
-          {formatNum(totalFollowers(chad.platforms))} total
-        </span>
-        <TrendBadge
-          trend={chad.score.trend}
-          growth={chad.score.monthlyGrowth}
-        />
-      </div>
-    </div>
-  );
-}
-
-export default function ComparePage() {
-  const [chadA, setChadA] = useState<Chad | null>(null);
-  const [chadB, setChadB] = useState<Chad | null>(null);
-
-  const both = chadA && chadB;
+  const [chadA, chadB] = matchup;
+  const scoreA = ratings.get(chadA.id);
+  const scoreB = ratings.get(chadB.id);
+  const audienceA =
+    scoreA && scoreA.total_votes > 0
+      ? eloToAudienceScore(scoreA.elo_rating)
+      : null;
+  const audienceB =
+    scoreB && scoreB.total_votes > 0
+      ? eloToAudienceScore(scoreB.elo_rating)
+      : null;
 
   return (
     <div className="ambient-glow flex flex-col gap-6">
+      {/* Header */}
       <div className="relative z-10 text-center">
         <h1 className="font-heading text-4xl font-black tracking-tight text-[#F8FAFC]">
-          HEAD TO <span className="text-[#F59E0B]">HEAD</span>
+          WHO <span className="text-[#F59E0B]">MOGS</span> WHO
         </h1>
         <p className="mt-2 font-mono text-sm text-[#64748B]">
-          Select two chads to compare their stats side by side
+          Pick the chad that mogs. Your votes shape the Audience Score.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-        <CompareSlot
+      {/* Session stats */}
+      <div className="flex justify-center gap-4">
+        <span className="rounded-md border border-[#1E293B] bg-[#0F172A] px-3 py-1.5 font-mono text-xs text-[#64748B]">
+          Votes this session:{' '}
+          <span className="text-[#F59E0B]">{sessionVotes}</span>
+        </span>
+      </div>
+
+      {/* Matchup area */}
+      <div className="relative flex flex-col items-stretch gap-4 sm:flex-row sm:gap-6">
+        <MatchupCard
           chad={chadA}
-          onSelect={setChadA}
-          onClear={() => setChadA(null)}
-          label="CHAD #1"
+          side="left"
+          audienceScore={audienceA}
+          onVote={() => handleVote(chadA.id, chadB.id)}
+          result={voteResult}
+          isWinner={voteResult ? voteResult.winner.chad_id === chadA.id : null}
+          disabled={voting || !!voteResult}
         />
-        <CompareSlot
+
+        {/* VS divider */}
+        <div className="vs-pulse absolute left-1/2 top-1/2 z-10 hidden -translate-x-1/2 -translate-y-1/2 sm:flex">
+          <span className="flex h-14 w-14 items-center justify-center rounded-full border border-[#1E293B] bg-[#020617] font-heading text-xl font-black text-[#F59E0B]">
+            VS
+          </span>
+        </div>
+
+        {/* Mobile VS */}
+        <div className="flex items-center justify-center sm:hidden">
+          <span className="font-heading text-xl font-black text-[#F59E0B]">
+            VS
+          </span>
+        </div>
+
+        <MatchupCard
           chad={chadB}
-          onSelect={setChadB}
-          onClear={() => setChadB(null)}
-          label="CHAD #2"
+          side="right"
+          audienceScore={audienceB}
+          onVote={() => handleVote(chadB.id, chadA.id)}
+          result={voteResult}
+          isWinner={voteResult ? voteResult.winner.chad_id === chadB.id : null}
+          disabled={voting || !!voteResult}
         />
       </div>
 
-      {/* Comparison table */}
-      {both && (
-        <div className="rounded-lg border border-[#1E293B] bg-[#0F172A] p-6">
-          <h2 className="mb-4 font-heading text-lg font-bold text-[#F8FAFC]">
-            BREAKDOWN
-          </h2>
-          <div className="flex flex-col divide-y divide-[#1E293B]">
-            {[
-              {
-                label: 'Mog Score',
-                a: chadA!.score.chadScore,
-                b: chadB!.score.chadScore,
-              },
-              {
-                label: 'Total Followers',
-                a: totalFollowers(chadA!.platforms),
-                b: totalFollowers(chadB!.platforms),
-                format: true,
-              },
-              {
-                label: 'Virality',
-                a: chadA!.score.viralityScore,
-                b: chadB!.score.viralityScore,
-              },
-              {
-                label: 'Monthly Growth',
-                a: chadA!.score.monthlyGrowth,
-                b: chadB!.score.monthlyGrowth,
-                suffix: '%',
-              },
-              {
-                label: 'Platforms',
-                a: chadA!.platforms.length,
-                b: chadB!.platforms.length,
-              },
-            ].map((row) => {
-              const aWins =
-                typeof row.a === 'number' && typeof row.b === 'number'
-                  ? row.a > row.b
-                  : false;
-              const bWins =
-                typeof row.a === 'number' && typeof row.b === 'number'
-                  ? row.b > row.a
-                  : false;
-
-              return (
-                <div
-                  key={row.label}
-                  className="grid grid-cols-3 items-center py-3"
-                >
-                  <span
-                    className={`text-right font-mono text-sm ${
-                      aWins ? 'font-bold text-[#F59E0B]' : 'text-[#F8FAFC]'
-                    }`}
-                  >
-                    {row.format ? formatNum(row.a as number) : row.a}
-                    {row.suffix || ''}
-                  </span>
-                  <span className="text-center font-mono text-[10px] uppercase text-[#64748B]">
-                    {row.label}
-                  </span>
-                  <span
-                    className={`font-mono text-sm ${
-                      bWins ? 'font-bold text-[#F59E0B]' : 'text-[#F8FAFC]'
-                    }`}
-                  >
-                    {row.format ? formatNum(row.b as number) : row.b}
-                    {row.suffix || ''}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
+      {/* Error message */}
+      {error && (
+        <div className="text-center font-mono text-xs text-[#EF4444]">
+          {error}
         </div>
       )}
+
+      {/* Skip button */}
+      <div className="flex justify-center">
+        <button
+          onClick={newMatchup}
+          disabled={voting}
+          className="rounded-md border border-[#1E293B] bg-[#0F172A] px-6 py-2 font-mono text-xs text-[#64748B] transition-colors hover:border-[#64748B] hover:text-[#F8FAFC] disabled:opacity-50"
+        >
+          SKIP — NEW MATCHUP
+        </button>
+      </div>
     </div>
   );
 }

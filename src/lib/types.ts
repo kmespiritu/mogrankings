@@ -55,5 +55,13 @@ export interface ScoreInputs {
   communityVote: number;
 }
 
-export type SortField = 'rank' | 'name' | 'chadScore' | 'followers' | 'growth';
+export interface EloRating {
+  chad_id: string;
+  elo_rating: number;
+  wins: number;
+  losses: number;
+  total_votes: number;
+}
+
+export type SortField = 'rank' | 'name' | 'chadScore' | 'followers' | 'growth' | 'audienceScore';
 export type SortDirection = 'asc' | 'desc';
