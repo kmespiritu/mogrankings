@@ -1,15 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 import { calculateElo } from '@/lib/elo';
 
 export async function POST(request: NextRequest) {
   try {
+    // Payload size guard
+    const contentLength = request.headers.get('content-length');
+    if (contentLength && parseInt(contentLength, 10) > 1024) {
+      return NextResponse.json({ error: 'Payload too large' }, { status: 413 });
+    }
+
     const body = await request.json();
     const { winnerId, loserId } = body;
 
     if (!winnerId || !loserId || winnerId === loserId) {
       return NextResponse.json(
         { error: 'Invalid winnerId or loserId' },
+        { status: 400 }
+      );
+    }
+
+    // Validate that winnerId and loserId are simple strings (not injection attempts)
+    if (typeof winnerId !== 'string' || typeof loserId !== 'string' ||
+        winnerId.length > 10 || loserId.length > 10 ||
+        !/^\d+$/.test(winnerId) || !/^\d+$/.test(loserId)) {
+      return NextResponse.json(
+        { error: 'Invalid chad ID format' },
         { status: 400 }
       );
     }
@@ -21,8 +38,9 @@ export async function POST(request: NextRequest) {
       'unknown';
 
     // Rate limit: 1 vote per matchup pair per IP per hour
+    // Use supabaseAdmin for reads too (anon SELECT still works, but admin is consistent)
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
-    const { data: recentVotes } = await supabase
+    const { data: recentVotes } = await supabaseAdmin
       .from('votes')
       .select('id')
       .eq('voter_ip', voterIp)
@@ -39,7 +57,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Fetch current ELO ratings for both chads
+    // Global rate limit: max 60 votes per IP per hour (prevents rapid-fire abuse)
+    const { count: hourlyVoteCount } = await supabaseAdmin
+      .from('votes')
+      .select('id', { count: 'exact', head: true })
+      .eq('voter_ip', voterIp)
+      .gte('created_at', oneHourAgo);
+
+    if (hourlyVoteCount !== null && hourlyVoteCount >= 60) {
+      return NextResponse.json(
+        { error: 'Rate limited: too many votes this hour' },
+        { status: 429 }
+      );
+    }
+
+    // Fetch current ELO ratings for both chads (read via anon client is fine)
     const { data: winnerData } = await supabase
       .from('elo_ratings')
       .select('*')
@@ -65,8 +97,8 @@ export async function POST(request: NextRequest) {
     // Calculate new ELO
     const { newWinner, newLoser } = calculateElo(winnerEloBefore, loserEloBefore);
 
-    // Update winner ELO
-    await supabase
+    // Update winner ELO — via supabaseAdmin (bypasses RLS)
+    await supabaseAdmin
       .from('elo_ratings')
       .update({
         elo_rating: newWinner,
@@ -76,8 +108,8 @@ export async function POST(request: NextRequest) {
       })
       .eq('chad_id', winnerId);
 
-    // Update loser ELO
-    await supabase
+    // Update loser ELO — via supabaseAdmin
+    await supabaseAdmin
       .from('elo_ratings')
       .update({
         elo_rating: newLoser,
@@ -87,8 +119,8 @@ export async function POST(request: NextRequest) {
       })
       .eq('chad_id', loserId);
 
-    // Record the vote
-    await supabase.from('votes').insert({
+    // Record the vote — via supabaseAdmin
+    await supabaseAdmin.from('votes').insert({
       winner_id: winnerId,
       loser_id: loserId,
       winner_elo_before: winnerEloBefore,
